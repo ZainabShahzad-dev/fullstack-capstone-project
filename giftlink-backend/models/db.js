@@ -1,28 +1,34 @@
 // db.js
 require('dotenv').config();
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient } = require('mongodb');
 
-// MongoDB connection URL with authentication options
-let url = `${process.env.MONGO_URL}`;
+// MongoDB connection URL from .env
+let url = process.env.MONGO_URL;
 
 let dbInstance = null;
 const dbName = "giftdb";
 
 async function connectToDatabase() {
-    if (dbInstance){
-        return dbInstance
-    };
+    // Return existing instance if already connected
+    if (dbInstance) {
+        return dbInstance;
+    }
 
-    const client = new MongoClient(url);      
+    try {
+        // Task 1: Connect to MongoDB
+        const client = new MongoClient(url);
+        await client.connect();
+        console.log("MongoDB connected successfully");
 
-    // Task 1: Connect to MongoDB
-    // {{insert code}}
+        // Task 2: Connect to database giftdb and store in variable dbInstance
+        dbInstance = client.db(dbName);
 
-    // Task 2: Connect to database giftDB and store in variable dbInstance
-    //{{insert code}}
-
-    // Task 3: Return database instance
-    // {{insert code}}
+        // Task 3: Return database instance
+        return dbInstance;
+    } catch (err) {
+        console.error("MongoDB connection error:", err);
+        throw err;
+    }
 }
 
 module.exports = connectToDatabase;
